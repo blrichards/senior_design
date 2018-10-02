@@ -61,7 +61,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
   sudo pip install scipy tensorflow
 
   # Link this project to your journey workspace.
-  if [ -e "~/journey_ws/src/journey" ]; then
+  if [[ -e "~/journey_ws/src/journey" ]]; then
     rm -rf ~/journey_ws/src/journey
   fi
   unlink ~/journey_ws/src/journey
