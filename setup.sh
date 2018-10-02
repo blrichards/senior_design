@@ -21,8 +21,10 @@ mkdir -p ~/journey_ws/src
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   # Setup your computer to accept software from packages.ros.org.
   sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+  sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
 
   # Set up your keys.
+  wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
   sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 
   # Make sure your Debian package index is up-to-date.
@@ -30,7 +32,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
   # Desktop-Full Install: (Recommended) : ROS, rqt, rviz, robot-generic
   # libraries, 2D/3D simulators, navigation and 2D/3D perception
-  sudo apt-get -y install ros-kinetic-desktop-full
+  sudo apt-get -y install ros-melodic-desktop-full gazebo9 libgazebo9-dev
 
   # In order to use rosdep, we have to initialize it.
   sudo rosdep init
@@ -43,29 +45,35 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
   # source trees for ROS packages with one command.
 
   # To install this tool and other dependencies for building ROS packages, run:
-  sudo apt-get -y install python-rosinstall python-rosinstall-generator python-wstool build-essential python-catkin-tools ros-kinetic-joy ros-kinetic-teleop-twist-joy ros-kinetic-teleop-twist-keyboard ros-kinetic-laser-proc ros-kinetic-rgbd-launch ros-kinetic-depthimage-to-laserscan ros-kinetic-rosserial-arduino ros-kinetic-rosserial-python ros-kinetic-rosserial-server ros-kinetic-rosserial-client ros-kinetic-rosserial-msgs ros-kinetic-amcl ros-kinetic-map-server ros-kinetic-move-base ros-kinetic-urdf ros-kinetic-xacro ros-kinetic-compressed-image-transport ros-kinetic-rqt-image-view ros-kinetic-gmapping ros-kinetic-navigation ros-kinetic-ar-track-alvar
+  sudo apt-get -y install python-rosinstall python-rosinstall-generator python-wstool build-essential python-catkin-tools ros-melodic-joy ros-melodic-teleop-twist-keyboard ros-melodic-laser-proc ros-melodic-rgbd-launch ros-melodic-amcl ros-melodic-map-server ros-melodic-move-base ros-melodic-urdf ros-melodic-xacro ros-melodic-compressed-image-transport ros-melodic-rqt-image-view ros-melodic-navigation ros-melodic-ar-track-alvar
 
   # Install hector quadrotor suite.
-  sudo apt-get -y install ros-kinetic-hector-*
+  sudo apt-get -y install ros-melodic-hector-*
 
   # Install ardrone_autonomy.
-  sudo apt-get -y install ros-kinetic-ardrone-autonomy freeglut3-dev liblapack-dev libopenblas-dev
+  sudo apt-get -y install ros-indego-ardrone-autonomy freeglut3-dev liblapack-dev libopenblas-dev
+
+  # Install ros-gazebo packages.
+  sudo apt-get -y install ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-control
 
   # Install python packages
   sudo apt-get install python-pip
   sudo pip install scipy tensorflow
 
   # Link this project to your journey workspace.
+  if [ -e "~/journey_ws/src/journey" ]; then
+    rm -rf ~/journey_ws/src/journey
+  fi
   unlink ~/journey_ws/src/journey
   ln -s $PROJECT_DIR ~/journey_ws/src/journey
 
   # # Add some convenient bash commands.
   echo "source ~/journey_ws/src/journey/journey.bash" >> ~/.bashrc
-  bash ~/.bashrc
+  source ~/.bashrc
 
   # Build journey workspace.
   cd ~/journey_ws
-  source /opt/ros/kinetic/setup.bash
+  source /opt/ros/melodic/setup.bash
   catkin init
   catkin clean --yes
   cd src
@@ -107,16 +115,16 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 
   # Fetch core packages so we can build them. We will use wstool for this.
   # Desktop Install (recommended): ROS, rqt, rviz, and robot-generic libraries
-  rosinstall_generator desktop --rosdistro kinetic --deps --wet-only --tar > kinetic-desktop-wet.rosinstall
+  rosinstall_generator desktop --rosdistro melodic --deps --wet-only --tar > melodic-desktop-wet.rosinstall
 
   # This will add all of the catkin or wet packages in the given variant and
   # then fetch the sources into the ~/ros_catkin_ws/src directory. The command
   # will take a few minutes to download all of the core ROS packages into the
   # src folder. The -j8 option downloads 8 packages in parallel.
-  wstool init -j8 src kinetic-desktop-wet.rosinstall
+  wstool init -j8 src melodic-desktop-wet.rosinstall
 
   # Before you can build your catkin workspace you need to make sure that you
   # have all the required dependencies. We use the rosdep tool for this:
-  rosdep install --from-paths src --ignore-src --rosdistro kinetic -y
+  rosdep install --from-paths src --ignore-src --rosdistro melodic -y
 fi
 exit 0
